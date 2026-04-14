@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FibreNet — Project Margin Tool</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600&family=Barlow+Condensed:wght@400;500;600;700&display=swap');
+
+  :root {
+    --black:    #1a1a18;
+    --gold:     #9e8a58;
+    --gold-lt:  #c4ae7a;
+    --gold-pl:  #e8dfc4;
+    --cream:    #f0ece0;
+    --cream-dk: #e4dece;
+    --stone:    #d4cbb6;
+    --white:    #fafaf7;
+    --txt:      #1a1a18;
+    --txt-mid:  #5a5748;
+    --txt-dim:  #8a8372;
+    --border:   #ddd5be;
+    --sh:       0 1px 3px rgba(26,26,24,.07), 0 4px 14px rgba(26,26,24,.04);
+    --sh-md:    0 2px 8px rgba(26,26,24,.09), 0 8px 24px rgba(26,26,24,.05);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 16px; }
+  body { font-family: 'Barlow', sans-serif; background: var(--white); color: var(--txt); line-height: 1.5; min-height: 100vh; }
+
+  /* ── HEADER ── */
+  .hd { background: var(--black); border-bottom: 3px solid var(--gold); }
+  .hd-inner { max-width: 1200px; margin: 0 auto; padding: 18px 40px; display: flex; align-items: center; gap: 28px; }
+  .hd img { height: 34px; display: block; flex-shrink: 0; }
+  .hd-div { width: 1px; height: 38px; background: rgba(158,138,88,.35); }
+  .hd-txt { flex: 1; }
+  .hd-title { font-family: 'Barlow Condensed', sans-serif; font-size: 1.4rem; font-weight: 600; color: var(--gold-pl); letter-spacing: .05em; text-transform: uppercase; }
+  .hd-sub { font-size: .8rem; color: rgba(232,223,196,.5); font-weight: 300; margin-top: 1px; }
+  .reset-btn {
+    font-family: 'Barlow Condensed', sans-serif; font-size: .75rem; font-weight: 700;
+    letter-spacing: .1em; text-transform: uppercase; background: transparent;
+    border: 1px solid rgba(158,138,88,.45); color: var(--gold-lt);
+    padding: 7px 18px; cursor: pointer; transition: all .2s; white-space: nowrap;
+  }
+  .reset-btn:hover { background: rgba(158,138,88,.13); border-color: var(--gold-lt); }
+
+  /* ── MAIN ── */
+  .main { max-width: 1200px; margin: 0 auto; padding: 32px 40px 60px; }
+
+  /* ── SUMMARY STRIP ── */
+  .strip { display: grid; grid-template-columns: repeat(4,1fr); border: 1px solid var(--border); box-shadow: var(--sh-md); margin-bottom: 28px; }
+  .tile { padding: 22px 26px; border-right: 1px solid var(--border); background: var(--white); }
+  .tile:last-child { border-right: none; }
+  .tile.dark { background: var(--black); }
+  .tile.dark .t-lbl { color: rgba(232,223,196,.45); }
+  .tile.dark .t-val { color: var(--gold-pl); }
+  .tile.dark .t-sub { color: rgba(232,223,196,.3); }
+  .t-lbl { font-family: 'Barlow Condensed', sans-serif; font-size: .65rem; font-weight: 700; letter-spacing: .13em; text-transform: uppercase; color: var(--txt-dim); margin-bottom: 7px; }
+  .t-val { font-family: 'Barlow Condensed', sans-serif; font-size: 2.25rem; font-weight: 600; color: var(--txt); letter-spacing: -.01em; line-height: 1; margin-bottom: 3px; }
+  .t-val.pos { color: #4a7c59; }
+  .t-val.neg { color: #8c3a2a; }
+  .t-sub { font-size: .7rem; color: var(--txt-dim); }
+
+  /* ── LAYOUT ── */
+  .layout { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 28px; }
+  .col { display: flex; flex-direction: column; gap: 20px; }
+
+  /* ── CARD ── */
+  .card { background: var(--white); border: 1px solid var(--border); padding: 20px 22px; box-shadow: var(--sh); }
+  .card-lbl { font-family: 'Barlow Condensed', sans-serif; font-size: .65rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--txt-dim); padding-bottom: 10px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+
+  /* ── REVENUE HERO ── */
+  .rev-hero { text-align: center; padding: 6px 0 18px; }
+  .rev-lbl { font-family: 'Barlow Condensed', sans-serif; font-size: .65rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--txt-dim); margin-bottom: 5px; }
+  .rev-val { font-family: 'Barlow Condensed', sans-serif; font-size: 2.8rem; font-weight: 700; color: var(--txt); letter-spacing: -.02em; line-height: 1; }
+
+  /* ── SLIDERS ── */
+  .sg { margin-bottom: 20px; }
+  .sg:last-child { margin-bottom: 0; }
+  .sg-hd { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 7px; }
+  .sg-lbl { font-size: .8rem; font-weight: 500; color: var(--txt-mid); }
+  .sg-val { font-family: 'Barlow Condensed', sans-serif; font-size: 1.1rem; font-weight: 600; color: var(--txt); }
+  input[type=range] { -webkit-appearance: none; width: 100%; height: 3px; background: var(--stone); outline: none; cursor: pointer; }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 15px; height: 15px; background: var(--black); border: 2px solid var(--gold); border-radius: 50%; cursor: pointer; transition: transform .15s, background .15s; }
+  input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); background: var(--gold); }
+  input[type=range]::-moz-range-thumb { width: 15px; height: 15px; background: var(--black); border: 2px solid var(--gold); border-radius: 50%; }
+  .sg-range { display: flex; justify-content: space-between; margin-top: 3px; }
+  .sg-range span { font-size: .65rem; color: var(--txt-dim); }
+
+  /* ── SPLIT BAR ── */
+  .sbar { margin-top: 10px; }
+  .sbar-track { height: 7px; display: flex; }
+  .sbar-a { height: 100%; background: var(--black); transition: width .3s; }
+  .sbar-b { height: 100%; background: var(--gold); flex: 1; }
+  .sbar-labels { display: flex; justify-content: space-between; margin-top: 5px; }
+  .sbar-lbl { font-size: .65rem; display: flex; align-items: center; gap: 4px; color: var(--txt-mid); font-weight: 500; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  .dot-k { background: var(--black); }
+  .dot-g { background: var(--gold); }
+
+  /* ── CHARTS ROW ── */
+  .charts { display: grid; grid-template-columns: 1fr 1fr 2fr; gap: 20px; margin-bottom: 28px; }
+  .cc { background: var(--white); border: 1px solid var(--border); padding: 18px 20px; box-shadow: var(--sh); }
+  .cc-lbl { font-family: 'Barlow Condensed', sans-serif; font-size: .65rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--txt-dim); margin-bottom: 14px; }
+
+  /* ── CSS BAR CHART ── */
+  .bchart { display: flex; flex-direction: column; gap: 11px; }
+  .brow { display: flex; align-items: center; gap: 10px; }
+  .brow-lbl { font-family: 'Barlow Condensed', sans-serif; font-size: .65rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--txt-dim); width: 84px; flex-shrink: 0; text-align: right; }
+  .brow-track { flex: 1; height: 34px; position: relative; background: var(--cream-dk); overflow: hidden; }
+  .brow-fill { position: absolute; left: 0; top: 0; height: 100%; transition: width .35s ease; display: flex; align-items: center; justify-content: flex-end; }
+  .brow-amt-in { font-family: 'Barlow Condensed', sans-serif; font-size: .8rem; font-weight: 600; color: var(--white); padding-right: 8px; white-space: nowrap; }
+  .brow-amt-out { font-family: 'Barlow Condensed', sans-serif; font-size: .8rem; font-weight: 600; color: var(--txt); position: absolute; top: 50%; transform: translateY(-50%); white-space: nowrap; }
+
+  /* ── DETAIL ── */
+  .det-lbl { font-family: 'Barlow Condensed', sans-serif; font-size: .65rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--txt-dim); padding-bottom: 8px; border-bottom: 1px solid var(--border); margin-bottom: 18px; }
+  .det-sub { font-family: 'Barlow Condensed', sans-serif; font-size: .62rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--txt-dim); margin-bottom: 7px; }
+  .dgrid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); margin-bottom: 18px; }
+  .dgrid-2 { display: grid; grid-template-columns: repeat(2,1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); margin-bottom: 0; }
+  .dtile { background: var(--white); padding: 14px 18px; }
+  .dtile.sh { background: var(--cream); }
+  .d-lbl { font-size: .62rem; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--txt-dim); margin-bottom: 3px; }
+  .d-val { font-family: 'Barlow Condensed', sans-serif; font-size: 1.2rem; font-weight: 600; color: var(--txt); }
+
+  /* ── INFO NOTE ── */
+  .note { padding: 9px 12px; background: var(--cream); border-left: 2px solid var(--gold); margin-top: 12px; }
+  .note p { font-size: .75rem; color: var(--txt-mid); font-style: italic; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 1040px) {
+    .charts { grid-template-columns: 1fr 1fr; }
+    .charts .cc:last-child { grid-column: span 2; }
+  }
+  @media (max-width: 860px) {
+    .main { padding: 22px 20px 44px; }
+    .hd-inner { padding: 14px 20px; gap: 16px; }
+    .hd-div { display: none; }
+    .strip { grid-template-columns: 1fr 1fr; }
+    .tile { border-bottom: 1px solid var(--border); }
+    .tile:nth-child(2) { border-right: none; }
+    .layout { grid-template-columns: 1fr; }
+    .charts { grid-template-columns: 1fr; }
+    .charts .cc:last-child { grid-column: span 1; }
+    .dgrid { grid-template-columns: 1fr 1fr; }
+    .dgrid-2 { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 540px) {
+    .strip { grid-template-columns: 1fr; }
+    .tile { border-right: none; }
+    .dgrid, .dgrid-2 { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hd">
+  <div class="hd-inner">
+    <img src="data:image/jpeg;base64,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" alt="FibreNet">
+    <div class="hd-div"></div>
+    <div class="hd-txt">
+      <div class="hd-title">Project Margin Tool</div>
+      <div class="hd-sub">How does project gross margin change as the revenue mix changes?</div>
+    </div>
+    <button class="reset-btn" onclick="resetDefaults()">↺ Reset</button>
+  </div>
+</header>
+
+<main class="main">
+
+  <!-- SUMMARY STRIP -->
+  <div class="strip">
+    <div class="tile">
+      <div class="t-lbl">Total Revenue</div>
+      <div class="t-val" id="o-rev">$500,000</div>
+      <div class="t-sub">Project value</div>
+    </div>
+    <div class="tile">
+      <div class="t-lbl">Total Cost</div>
+      <div class="t-val" id="o-cost">—</div>
+      <div class="t-sub">Product + external labour</div>
+    </div>
+    <div class="tile">
+      <div class="t-lbl">Gross Profit</div>
+      <div class="t-val" id="o-gp">—</div>
+      <div class="t-sub">Revenue minus cost</div>
+    </div>
+    <div class="tile dark">
+      <div class="t-lbl">Gross Margin</div>
+      <div class="t-val" id="o-gm">—</div>
+      <div class="t-sub" id="o-gm-ctx">Project level</div>
+    </div>
+  </div>
+
+  <!-- CHARTS -->
+  <div class="charts">
+    <div class="cc">
+      <div class="cc-lbl">Revenue Mix</div>
+      <svg id="c-rev" viewBox="0 0 160 160" width="100%" style="max-width:150px;display:block;margin:0 auto;"></svg>
+      <div style="display:flex;gap:14px;justify-content:center;margin-top:9px;">
+        <span class="sbar-lbl"><span class="dot dot-k"></span><span id="lg-prod">50%</span>&nbsp;Product</span>
+        <span class="sbar-lbl"><span class="dot dot-g"></span><span id="lg-lab">50%</span>&nbsp;Labour</span>
+      </div>
+    </div>
+    <div class="cc">
+      <div class="cc-lbl">Labour Mix</div>
+      <svg id="c-lab" viewBox="0 0 160 160" width="100%" style="max-width:150px;display:block;margin:0 auto;"></svg>
+      <div style="display:flex;gap:14px;justify-content:center;margin-top:9px;">
+        <span class="sbar-lbl"><span class="dot dot-k"></span><span id="lg-int">50%</span>&nbsp;Internal</span>
+        <span class="sbar-lbl"><span class="dot dot-g"></span><span id="lg-ext">50%</span>&nbsp;External</span>
+      </div>
+    </div>
+    <div class="cc">
+      <div class="cc-lbl">Revenue / Cost / Gross Profit</div>
+      <div class="bchart" id="bchart"></div>
+    </div>
+  </div>
+
+  <!-- INPUTS -->
+  <div class="layout">
+
+    <div class="col">
+
+      <!-- Revenue -->
+      <div class="card">
+        <div class="card-lbl">Project Revenue</div>
+        <div class="rev-hero">
+          <div class="rev-lbl">Total Project Value</div>
+          <div class="rev-val" id="d-rev">$500,000</div>
+        </div>
+        <div class="sg">
+          <input type="range" id="sl-rev" min="100000" max="2000000" step="10000" value="500000" oninput="calc()">
+          <div class="sg-range"><span>$100k</span><span>$2M</span></div>
+        </div>
+      </div>
+
+      <!-- Revenue Mix -->
+      <div class="card">
+        <div class="card-lbl">Revenue Mix</div>
+        <div class="sg">
+          <div class="sg-hd">
+            <span class="sg-lbl">Product % of Revenue</span>
+            <span class="sg-val" id="d-pp">50%</span>
+          </div>
+          <input type="range" id="sl-pp" min="0" max="100" step="1" value="50" oninput="calc()">
+          <div class="sg-range"><span>0%</span><span>100%</span></div>
+        </div>
+        <div class="sbar">
+          <div class="sbar-track">
+            <div class="sbar-a" id="sb-prod" style="width:50%"></div>
+            <div class="sbar-b"></div>
+          </div>
+          <div class="sbar-labels">
+            <span class="sbar-lbl"><span class="dot dot-k"></span>Product&nbsp;<span id="sbl-prod">50%</span></span>
+            <span class="sbar-lbl"><span class="dot dot-g"></span>Labour&nbsp;<span id="sbl-lab">50%</span></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Margin Assumptions -->
+      <div class="card">
+        <div class="card-lbl">Margin Assumptions</div>
+        <div class="sg">
+          <div class="sg-hd">
+            <span class="sg-lbl">Product Gross Margin %</span>
+            <span class="sg-val" id="d-pm">30%</span>
+          </div>
+          <input type="range" id="sl-pm" min="10" max="50" step="1" value="30" oninput="calc()">
+          <div class="sg-range"><span>10%</span><span>50%</span></div>
+        </div>
+        <div class="sg">
+          <div class="sg-hd">
+            <span class="sg-lbl">External Labour Gross Margin %</span>
+            <span class="sg-val" id="d-em">30%</span>
+          </div>
+          <input type="range" id="sl-em" min="10" max="50" step="1" value="30" oninput="calc()">
+          <div class="sg-range"><span>10%</span><span>50%</span></div>
+        </div>
+      </div>
+
+    </div><!-- col -->
+
+    <div class="col">
+
+      <!-- Labour Mix -->
+      <div class="card">
+        <div class="card-lbl">Labour Mix</div>
+        <div class="sg">
+          <div class="sg-hd">
+            <span class="sg-lbl">Internal Labour % of Total Labour</span>
+            <span class="sg-val" id="d-ip">50%</span>
+          </div>
+          <input type="range" id="sl-ip" min="0" max="100" step="1" value="50" oninput="calc()">
+          <div class="sg-range"><span>0%</span><span>100%</span></div>
+        </div>
+        <div class="sbar">
+          <div class="sbar-track">
+            <div class="sbar-a" id="sb-int" style="width:50%"></div>
+            <div class="sbar-b"></div>
+          </div>
+          <div class="sbar-labels">
+            <span class="sbar-lbl"><span class="dot dot-k"></span>Internal&nbsp;<span id="sbl-int">50%</span></span>
+            <span class="sbar-lbl"><span class="dot dot-g"></span>External&nbsp;<span id="sbl-ext">50%</span></span>
+          </div>
+        </div>
+        <div class="note">
+          <p>Internal labour carries no direct project cost in this model. Increasing internal labour % improves overall project gross margin.</p>
+        </div>
+      </div>
+
+    </div><!-- col -->
+
+  </div><!-- layout -->
+
+  <!-- DETAIL -->
+  <div class="det-lbl">Calculation Detail</div>
+
+  <div class="det-sub">Product</div>
+  <div class="dgrid">
+    <div class="dtile">
+      <div class="d-lbl">Product Revenue</div>
+      <div class="d-val" id="d-prod-rev">—</div>
+    </div>
+    <div class="dtile sh">
+      <div class="d-lbl">Product Cost</div>
+      <div class="d-val" id="d-prod-cost">—</div>
+    </div>
+    <div class="dtile">
+      <div class="d-lbl">Product Gross Profit</div>
+      <div class="d-val" id="d-prod-gp">—</div>
+    </div>
+  </div>
+
+  <div class="det-sub">Labour</div>
+  <div class="dgrid" style="margin-bottom:18px;grid-template-columns:repeat(2,1fr);">
+    <div class="dtile">
+      <div class="d-lbl">Total Labour Revenue</div>
+      <div class="d-val" id="d-lab-rev">—</div>
+    </div>
+    <div class="dtile sh">
+      <div class="d-lbl">Internal Labour Revenue</div>
+      <div class="d-val" id="d-int-rev">—</div>
+    </div>
+    <div class="dtile">
+      <div class="d-lbl">External Labour Revenue</div>
+      <div class="d-val" id="d-ext-rev">—</div>
+    </div>
+    <div class="dtile sh">
+      <div class="d-lbl">External Labour Cost</div>
+      <div class="d-val" id="d-ext-cost">—</div>
+    </div>
+    <div class="dtile" style="grid-column:span 2;">
+      <div class="d-lbl">External Labour Gross Profit</div>
+      <div class="d-val" id="d-ext-gp">—</div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+  const $ = id => document.getElementById(id);
+  const fmt  = n => '$' + Math.round(n).toLocaleString('en-AU');
+  const fmtP = n => (Math.round(n * 10) / 10).toFixed(1) + '%';
+
+  /* ── DONUT: exact two-segment, no gap ─────────────── */
+  function donut(id, pA) {
+    const el = $(id);
+    const cx = 80, cy = 80, r = 58, sw = 24;
+    const C = 2 * Math.PI * r;
+    const a = Math.min(Math.max(pA, 0), 100);
+    const dA = (a / 100) * C;
+    const dB = C - dA;
+    el.innerHTML = `
+      <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#9e8a58" stroke-width="${sw}"/>
+      <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#1a1a18" stroke-width="${sw}"
+        stroke-dasharray="${dA} ${dB}" stroke-dashoffset="${C * 0.25}"
+        style="transition:stroke-dasharray .3s ease"/>
+    `;
+  }
+
+  /* ── CSS BAR CHART: labels always in-bounds ────────── */
+  function barChart(revenue, cost, gp) {
+    const container = $('bchart');
+    const maxV = Math.max(revenue, cost, Math.abs(gp), 1);
+    const rows = [
+      { label: 'Revenue',      val: revenue, col: '#1a1a18' },
+      { label: 'Total Cost',   val: cost,    col: '#9e8a58' },
+      { label: 'Gross Profit', val: gp,      col: gp >= 0 ? '#4a7c59' : '#8c3a2a' },
+    ];
+    container.innerHTML = rows.map(r => {
+      const pct   = Math.max(0, (Math.abs(r.val) / maxV) * 100);
+      const inside = pct > 42;
+      return `
+        <div class="brow">
+          <div class="brow-lbl">${r.label}</div>
+          <div class="brow-track">
+            <div class="brow-fill" style="width:${pct}%;background:${r.col};">
+              ${inside ? `<span class="brow-amt-in">${fmt(r.val)}</span>` : ''}
+            </div>
+            ${!inside ? `<span class="brow-amt-out" style="left:calc(${pct}% + 7px);">${fmt(r.val)}</span>` : ''}
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  /* ── MAIN CALC ──────────────────────────────────────── */
+  function calc() {
+    const revenue = +$('sl-rev').value;
+    const prodPct = +$('sl-pp').value / 100;   // product share of revenue
+    const intPct  = +$('sl-ip').value / 100;   // internal share of labour
+    const prodMgn = +$('sl-pm').value / 100;   // product gross margin
+    const extMgn  = +$('sl-em').value / 100;   // external labour gross margin
+
+    /* Step 1 — Revenue allocation */
+    const prodRev = revenue * prodPct;
+    const labRev  = revenue * (1 - prodPct);
+    const intRev  = labRev * intPct;
+    const extRev  = labRev * (1 - intPct);
+
+    /* Step 2 — Product economics */
+    const prodGP   = prodRev * prodMgn;
+    const prodCost = prodRev - prodGP;
+
+    /* Step 3 — Internal labour: zero cost, full revenue = full gross profit */
+    const intGP   = intRev;   // internal labour revenue flows straight to GP
+    const intCost = 0;
+
+    /* Step 4 — External labour economics */
+    const extGP   = extRev * extMgn;
+    const extCost = extRev - extGP;
+
+    /* Step 5 — Totals */
+    const totalCost   = prodCost + extCost;           // internal has no cost
+    const totalGP     = prodGP + intGP + extGP;
+    const grossMargin = revenue > 0 ? totalGP / revenue : 0;
+
+    /* ── Slider labels ── */
+    $('d-rev').textContent = fmt(revenue);
+    $('d-pp').textContent  = Math.round(prodPct * 100) + '%';
+    $('d-ip').textContent  = Math.round(intPct * 100) + '%';
+    $('d-pm').textContent  = Math.round(prodMgn * 100) + '%';
+    $('d-em').textContent  = Math.round(extMgn * 100) + '%';
+
+    /* ── Summary strip ── */
+    $('o-rev').textContent   = fmt(revenue);
+    $('o-cost').textContent  = fmt(totalCost);
+    $('o-gp').textContent    = fmt(totalGP);
+    $('o-gp').className      = 't-val ' + (totalGP >= 0 ? 'pos' : 'neg');
+    $('o-gm').textContent    = fmtP(grossMargin * 100);
+    $('o-gm-ctx').textContent =
+      grossMargin >= 0.25 ? 'Strong margin'   :
+      grossMargin >= 0.15 ? 'Moderate margin' :
+      grossMargin >= 0    ? 'Low margin'       : 'Loss position';
+
+    /* ── Detail ── */
+    $('d-prod-rev').textContent  = fmt(prodRev);
+    $('d-prod-cost').textContent = fmt(prodCost);
+    $('d-prod-gp').textContent   = fmt(prodGP);
+    $('d-lab-rev').textContent   = fmt(labRev);
+    $('d-int-rev').textContent   = fmt(intRev);
+    $('d-ext-rev').textContent   = fmt(extRev);
+    $('d-ext-cost').textContent  = fmt(extCost);
+    $('d-ext-gp').textContent    = fmt(extGP);
+
+    /* ── Split bars ── */
+    const pp = Math.round(prodPct * 100);
+    const ip = Math.round(intPct * 100);
+    $('sb-prod').style.width  = pp + '%';
+    $('sbl-prod').textContent = pp + '%';
+    $('sbl-lab').textContent  = (100 - pp) + '%';
+    $('sb-int').style.width   = ip + '%';
+    $('sbl-int').textContent  = ip + '%';
+    $('sbl-ext').textContent  = (100 - ip) + '%';
+
+    /* ── Chart legends ── */
+    $('lg-prod').textContent = pp + '%';
+    $('lg-lab').textContent  = (100 - pp) + '%';
+    $('lg-int').textContent  = ip + '%';
+    $('lg-ext').textContent  = (100 - ip) + '%';
+
+    /* ── Charts ── */
+    donut('c-rev', prodPct * 100);
+    donut('c-lab', intPct * 100);
+    barChart(revenue, totalCost, totalGP);
+  }
+
+  function resetDefaults() {
+    $('sl-rev').value = 500000;
+    $('sl-pp').value  = 50;
+    $('sl-ip').value  = 50;
+    $('sl-pm').value  = 30;
+    $('sl-em').value  = 30;
+    calc();
+  }
+
+  calc();
+</script>
+</body>
+</html>
